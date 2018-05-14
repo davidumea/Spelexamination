@@ -1,5 +1,3 @@
-/*import javafx.scene.paint.Stop;
-
 import java.awt.*;
 
 public class Player implements Runnable {
@@ -8,18 +6,18 @@ public class Player implements Runnable {
     int vx = 1;
     int vy = 1;
 
-    public Player() {
-        r2 = new Rectangle(50,50,425,425);
-        c2 = new Color(0xff00ff);
+    Ball b;
 
+    public Player(Ball b1) {
+        this.b = b1;
+        r2 = new Rectangle(50,50,50,50);
+        c2 = new Color(0xff00ff);
     }
 
     @Override
     public void run() {
         try {
             while (true) {
-                r2.x = vx;
-                r2.y = vy;
 
                 collision();
                 Thread.sleep(7);
@@ -30,6 +28,13 @@ public class Player implements Runnable {
     }
 
     private void collision() {
-
+        if (r2.intersects(b.r)) {
+            System.exit(1);
+        }
     }
-}*/
+
+    public void draw(Graphics g) {
+        g.setColor(c2);
+        g.fillRect(r2.x,r2.y,(int)r2.getWidth(),(int)r2.getHeight());
+    }
+}
