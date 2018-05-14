@@ -6,8 +6,13 @@ Pang pang spel
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.security.Key;
 
+/**
+ * Namnge variabler
+ */
 public class Spel extends Canvas {
     JFrame frame;
 
@@ -16,32 +21,41 @@ public class Spel extends Canvas {
 
     Ball b;
     Thread t;
-    //Player p;
+    Player p;
 
-    int width = 900;
-    int height = 900;
-    int y = 10;
+    int width = 700;
+    int height = 700;
+    int y = 1;
+    int x = 1;
 
-    Dimension screenSize = new Dimension(width,height);
+    boolean movingUp = false;
+    boolean movingDown = false;
+    boolean movingLeft = false;
+    boolean movingRight = false;
+
     boolean running = false;
 
+    static boolean gameOver = false;
+
+    /**
+     * Skapa allt
+     */
     public Spel(){
         this.frame = new JFrame("Spel");
-        this.setSize(screenSize);
+        this.setSize(new Dimension(width,height));
         this.frame.add(this);
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.frame.setVisible(true);
+        this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.frame.pack();
+        this.frame.setVisible(true);
         this.frame.setBackground(Color.lightGray);
-        //p = new Player();
         b = new Ball();
-        t = new Thread(b);
-        t.start();
+        p = new Player(b);
+        this.addKeyListener(new KL());
 
         Thread ball = new Thread(b);
-        //Thread Player = new Thread(p);
+        Thread Player = new Thread(p);
         ball.start();
-        //Player.start();
+        Player.start();
         running = true;
 
         long lastUpdate = System.nanoTime();
@@ -62,33 +76,91 @@ public class Spel extends Canvas {
             }
         }
     }
+
+    /**
+     * Rita ut bollen och spelaren
+     */
     private void draw() {
         dbImage = createImage(getWidth(),getHeight());
         dbg =  dbImage.getGraphics();
         b.draw(dbg);
+        p.draw(dbg);
         getGraphics().drawImage(dbImage,0,0,this);
     }
+
     private void check() {
         //Do something
     }
-    public void paint(Graphics g) {
-        try {
-            draw(g);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-    private void draw(Graphics g) throws InterruptedException {
-        g.setColor(Color.RED);
-        b.draw(g);
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e){
-            e.printStackTrace();
-        }
-    }
 
+    /**
+     * Kör programmet
+     * @param args
+     */
     public static void main(String[] args) {
         Spel spl = new Spel();
+    }
+
+    private class KL implements KeyListener {
+        @Override
+        public void keyTyped(KeyEvent e) {
+
+        }
+
+        /**
+         * Gör så knapparna W, A, S och D flyttar spelaren upp, vänster, ner och höger på skärmen
+         * @param e
+         */
+        @Override
+        public void keyPressed(KeyEvent e) {
+
+            if (e.getKeyCode() == KeyEvent.VK_W) {
+                p.r2.y-=12;
+                movingUp = true;
+            }
+            if (e.getKeyCode() == KeyEvent.VK_A) {
+                p.r2.x-=12;
+                movingLeft = true;
+            }
+            if (e.getKeyCode() == KeyEvent.VK_S) {
+                p.r2.y+=12;
+                movingDown = true;
+            }
+            if (e.getKeyCode() == KeyEvent.VK_D) {
+                p.r2.x+=12;
+                movingRight = true;
+            }
+            if (movingUp == true && movingLeft == true) {
+                p.r2.y-=8;
+                p.r2.x-=8;
+            }
+            if (movingUp == true && movingRight == true) {
+                p.r2.y-=8;
+                p.r2.x+=8;
+            }
+            if (movingDown == true && movingLeft == true) {
+                p.r2.y+=8;
+                p.r2.x-=8;
+            }
+            if (movingDown == true && movingRight == true) {
+                p.r2.y+=8;
+                p.r2.x+=8;
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_W) {
+                movingUp = false;
+            }
+            if (e.getKeyCode() == KeyEvent.VK_A) {
+                movingLeft = false;
+            }
+            if (e.getKeyCode() == KeyEvent.VK_S) {
+                movingDown = false;
+            }
+            if (e.getKeyCode() == KeyEvent.VK_D) {
+                movingRight = false;
+            }
+        }
     }
 }
