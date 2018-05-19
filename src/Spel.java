@@ -9,6 +9,8 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.security.Key;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Namnge variabler
@@ -22,14 +24,15 @@ public class Spel extends Canvas {
     Ball b;
     Thread t;
     Player p;
+    Timer timer;
 
     int width = 700;
     int height = 700;
     int y = 1;
     int x = 1;
 
-    boolean movingUp = false;
-    boolean movingDown = false;
+    static boolean movingUp = false;
+    static boolean movingDown = false;
     boolean movingLeft = false;
     boolean movingRight = false;
 
@@ -50,6 +53,8 @@ public class Spel extends Canvas {
         this.frame.setBackground(Color.lightGray);
         b = new Ball();
         p = new Player(b);
+        timer = new Timer();
+
         this.addKeyListener(new KL());
 
         Thread ball = new Thread(b);
@@ -129,21 +134,21 @@ public class Spel extends Canvas {
                 p.r2.x+=12;
                 movingRight = true;
             }
-            if (movingUp == true && movingLeft == true) {
-                p.r2.y-=8;
-                p.r2.x-=8;
+            if (movingUp && movingLeft) {
+                p.r2.y-=12;
+                p.r2.x-=12;
             }
-            if (movingUp == true && movingRight == true) {
-                p.r2.y-=8;
-                p.r2.x+=8;
+            if (movingUp && movingRight) {
+                p.r2.y-=12;
+                p.r2.x+=12;
             }
-            if (movingDown == true && movingLeft == true) {
-                p.r2.y+=8;
-                p.r2.x-=8;
+            if (movingDown && movingLeft) {
+                p.r2.y+=12;
+                p.r2.x-=12;
             }
-            if (movingDown == true && movingRight == true) {
-                p.r2.y+=8;
-                p.r2.x+=8;
+            if (movingDown && movingRight) {
+                p.r2.y+=12;
+                p.r2.x+=12;
             }
         }
 

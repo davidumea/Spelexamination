@@ -6,13 +6,9 @@ public class Ball implements Runnable {
     int vx = 1;
     int vy = 1;
 
-    public Ball(int i, int i1) {
+    public Ball() {
         r = new Rectangle((int)(Math.random()*900),(int)(Math.random()*900),25,25);
         c = new Color(0xFF193C);
-    }
-
-    public Ball() {
-
     }
 
     @Override
