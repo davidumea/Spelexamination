@@ -17,13 +17,13 @@ public class Spel extends Canvas {
     private Ball ball;
     private Player player;
 
-    private Timer timerUp;
-    private Timer timerLeft;
-    private Timer timerDown;
-    private Timer timerRight;
+    public static Timer timerUp;
+    public static Timer timerLeft;
+    public static Timer timerDown;
+    public static Timer timerRight;
 
-    private static final int STEP_SPEED = 2;
-    private static final int TIMES_STEPS = 5;
+    private static final int stepSpeed = 1;
+    private static final int timesSpeed = 1;
 
     private boolean movingUp;
     private boolean movingDown;
@@ -33,7 +33,8 @@ public class Spel extends Canvas {
     public static boolean gameOver = false;
 
     /**
-     * Skapa allt
+     * Skapa spelyta, spelaren, bollar, kopplar tangentbordet till spelet.
+     * Skapar ett system som uppdaterar hela spelet 60 gånger varje sekund så att spelet blir "60 fps" (frames per second)
      */
     private Spel(){
         JFrame frame = new JFrame("Spel");
@@ -72,7 +73,7 @@ public class Spel extends Canvas {
     }
 
     /**
-     * Rita ut bollen och spelaren
+     * Ritar ut bollen och spelaren på spelytan
      */
     private void draw() {
         Image dbImage = createImage(getWidth(), getHeight());
@@ -89,35 +90,37 @@ public class Spel extends Canvas {
         }
 
         /**
-         * Gör så knapparna W, A, S och D flyttar spelaren upp, vänster, ner och höger på skärmen
+         * När en knapp blir nedtryckt så skapas en timer för den riktningen (W = uppåt, A = vänster, S = neråt och D = höger),
+         * så länge knappen är nedtryckt så rör sig spelaren 3 pixlar varje femte millisekund i den riktningen.
+         * Om 2 knappar är nedtryckta samtidigt så rör sig spelaren diagonalt.
          * @param e
          */
         @Override
         public void keyPressed(KeyEvent e) {
             if (e.getKeyCode() == KeyEvent.VK_W && !movingUp) {
                 movingUp = true;
-                timerUp = new Timer(TIMES_STEPS, e1 -> player.characterModel.y -= STEP_SPEED);
+                timerUp = new Timer(timesSpeed, e1 -> player.characterModel.y -= stepSpeed);
                 timerUp.start();
             }
             if (e.getKeyCode() == KeyEvent.VK_A && !movingLeft) {
                 movingLeft = true;
-                timerLeft = new Timer(TIMES_STEPS, e1 -> player.characterModel.x -= STEP_SPEED);
+                timerLeft = new Timer(timesSpeed, e1 -> player.characterModel.x -= stepSpeed);
                 timerLeft.start();
             }
             if (e.getKeyCode() == KeyEvent.VK_S && !movingDown) {
                 movingDown = true;
-                timerDown = new Timer(TIMES_STEPS, e1 -> player.characterModel.y += STEP_SPEED);
+                timerDown = new Timer(timesSpeed, e1 -> player.characterModel.y += stepSpeed);
                 timerDown.start();
             }
             if (e.getKeyCode() == KeyEvent.VK_D && !movingRight) {
                 movingRight = true;
-                timerRight = new Timer(TIMES_STEPS, e1 -> player.characterModel.x += STEP_SPEED);
+                timerRight = new Timer(timesSpeed, e1 -> player.characterModel.x += stepSpeed);
                 timerRight.start();
             }
         }
 
         /**
-         * När W, A, S eller D inte är nertryckt så stannar den spelaren på skärmen
+         * När knappen åt en riktning (W, A, S eller D) släpps så stannas timern, alltså slutar spelaren röra på sig åt den riktningen.
          * @param e
          */
         @Override
