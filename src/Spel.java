@@ -7,108 +7,85 @@ Pang pang spel
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.security.Key;
-import java.util.Timer;
-import java.util.TimerTask;
+
 
 /**
  * Namnge variabler
  */
 public class Spel extends Canvas {
-    JFrame frame;
 
-    Image dbImage;
-    Graphics dbg;
+    private Ball ball;
+    private Player player;
 
-    Ball b;
-    Thread t;
-    Player p;
-    Timer timer;
+    private Timer timerUp;
+    private Timer timerLeft;
+    private Timer timerDown;
+    private Timer timerRight;
 
-    int width = 700;
-    int height = 700;
-    int y = 1;
-    int x = 1;
+    private static final int STEP_SPEED = 2;
+    private static final int TIMES_STEPS = 5;
 
-    static boolean movingUp = false;
-    static boolean movingDown = false;
-    boolean movingLeft = false;
-    boolean movingRight = false;
+    private boolean movingUp;
+    private boolean movingDown;
+    private boolean movingLeft;
+    private boolean movingRight;
 
-    boolean running = false;
-
-    static boolean gameOver = false;
+    public static boolean gameOver = false;
 
     /**
      * Skapa allt
      */
-    public Spel(){
-        this.frame = new JFrame("Spel");
-        this.setSize(new Dimension(width,height));
-        this.frame.add(this);
-        this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.frame.pack();
-        this.frame.setVisible(true);
-        this.frame.setBackground(Color.lightGray);
-        b = new Ball();
-        p = new Player(b);
-        timer = new Timer();
+    private Spel(){
+        JFrame frame = new JFrame("Spel");
+        int width = 700;
+        int height = 700;
+        this.setSize(new Dimension(width, height));
+        frame.add(this);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+        frame.setBackground(Color.lightGray);
+        ball = new Ball();
+        player = new Player(ball);
 
-        this.addKeyListener(new KL());
+        this.addKeyListener(new KeyListener());
 
-        Thread ball = new Thread(b);
-        Thread Player = new Thread(p);
+        Thread ball = new Thread(this.ball);
+        Thread Player = new Thread(player);
         ball.start();
         Player.start();
-        running = true;
 
         long lastUpdate = System.nanoTime();
-        long lastCheck = System.nanoTime();
-        int fps = 60;
-        int ups = 40;
-        long dt = 1000000000/fps;
-        long dt2 = 1000000000/ups;
-        while (running) {
 
+        int fps = 60;
+        long dt = 1000000000/fps;
+        while (true) {
             if (System.nanoTime() - lastUpdate > dt) {
                 lastUpdate = System.nanoTime();
                 draw();
             }
-            if (System.nanoTime() - lastCheck > dt2) {
-                lastCheck = System.nanoTime();
-                check();
-            }
         }
+    }
+
+    public static void main(String[] args) {
+        new Spel();
     }
 
     /**
      * Rita ut bollen och spelaren
      */
     private void draw() {
-        dbImage = createImage(getWidth(),getHeight());
-        dbg =  dbImage.getGraphics();
-        b.draw(dbg);
-        p.draw(dbg);
+        Image dbImage = createImage(getWidth(), getHeight());
+        Graphics dbg = dbImage.getGraphics();
+        ball.draw(dbg);
+        player.draw(dbg);
         getGraphics().drawImage(dbImage,0,0,this);
     }
 
-    private void check() {
-        //Do something
-    }
+    private class KeyListener implements java.awt.event.KeyListener {
 
-    /**
-     * Kör programmet
-     * @param args
-     */
-    public static void main(String[] args) {
-        Spel spl = new Spel();
-    }
-
-    private class KL implements KeyListener {
         @Override
         public void keyTyped(KeyEvent e) {
-
         }
 
         /**
@@ -117,54 +94,49 @@ public class Spel extends Canvas {
          */
         @Override
         public void keyPressed(KeyEvent e) {
-
-            if (e.getKeyCode() == KeyEvent.VK_W) {
-                p.r2.y-=12;
+            if (e.getKeyCode() == KeyEvent.VK_W && !movingUp) {
                 movingUp = true;
+                timerUp = new Timer(TIMES_STEPS, e1 -> player.characterModel.y -= STEP_SPEED);
+                timerUp.start();
             }
-            if (e.getKeyCode() == KeyEvent.VK_A) {
-                p.r2.x-=12;
+            if (e.getKeyCode() == KeyEvent.VK_A && !movingLeft) {
                 movingLeft = true;
+                timerLeft = new Timer(TIMES_STEPS, e1 -> player.characterModel.x -= STEP_SPEED);
+                timerLeft.start();
             }
-            if (e.getKeyCode() == KeyEvent.VK_S) {
-                p.r2.y+=12;
+            if (e.getKeyCode() == KeyEvent.VK_S && !movingDown) {
                 movingDown = true;
+                timerDown = new Timer(TIMES_STEPS, e1 -> player.characterModel.y += STEP_SPEED);
+                timerDown.start();
             }
-            if (e.getKeyCode() == KeyEvent.VK_D) {
-                p.r2.x+=12;
+            if (e.getKeyCode() == KeyEvent.VK_D && !movingRight) {
                 movingRight = true;
-            }
-            if (movingUp && movingLeft) {
-                p.r2.y-=12;
-                p.r2.x-=12;
-            }
-            if (movingUp && movingRight) {
-                p.r2.y-=12;
-                p.r2.x+=12;
-            }
-            if (movingDown && movingLeft) {
-                p.r2.y+=12;
-                p.r2.x-=12;
-            }
-            if (movingDown && movingRight) {
-                p.r2.y+=12;
-                p.r2.x+=12;
+                timerRight = new Timer(TIMES_STEPS, e1 -> player.characterModel.x += STEP_SPEED);
+                timerRight.start();
             }
         }
 
+        /**
+         * När W, A, S eller D inte är nertryckt så stannar den spelaren på skärmen
+         * @param e
+         */
         @Override
         public void keyReleased(KeyEvent e) {
             if (e.getKeyCode() == KeyEvent.VK_W) {
                 movingUp = false;
+                timerUp.stop();
             }
             if (e.getKeyCode() == KeyEvent.VK_A) {
                 movingLeft = false;
+                timerLeft.stop();
             }
             if (e.getKeyCode() == KeyEvent.VK_S) {
                 movingDown = false;
+                timerDown.stop();
             }
             if (e.getKeyCode() == KeyEvent.VK_D) {
                 movingRight = false;
+                timerRight.stop();
             }
         }
     }

@@ -1,13 +1,13 @@
 import java.awt.*;
 
 public class Ball implements Runnable {
-    Rectangle r;
+    Rectangle projectileModel;
     Color c;
     int vx = 1;
     int vy = 1;
 
-    public Ball() {
-        r = new Rectangle((int)(Math.random()*900),(int)(Math.random()*900),25,25);
+    Ball() {
+        projectileModel = new Rectangle((int)(Math.random()*900),(int)(Math.random()*900),25,25);
         c = new Color(0xFF193C);
     }
 
@@ -15,8 +15,8 @@ public class Ball implements Runnable {
     public void run() {
         try {
             while (true) {
-                r.x += vx;
-                r.y += vy;
+                projectileModel.x += vx;
+                projectileModel.y += vy;
 
                 collision();
                 Thread.sleep(7);
@@ -27,14 +27,14 @@ public class Ball implements Runnable {
     }
 
     private void collision() {
-        if ((vx >= 0 && r.x >= 675)|| (vx <= 0 && r.x <= 0)) {
+        if ((vx >= 0 && projectileModel.x >= 675) || (vx <= 0 && projectileModel.x <= 0)) {
             if (vx >= 0) {
                 vx = (int) (-(Math.random()+1)*3);
             } else{
                 vx = (int) ((Math.random()+1)*3);
             }
         }
-        if ((vy >= 0 && r.y >= 675 )|| (vy <= 0 && r.y <= 0)) {
+        if ((vy >= 0 && projectileModel.y >= 675) || (vy <= 0 && projectileModel.y <= 0)) {
             if (vy >= 0) {
                 vy = (int) (-(Math.random()+1)*3);
             } else{
@@ -45,6 +45,6 @@ public class Ball implements Runnable {
 
     public void draw(Graphics g) {
         g.setColor(c);
-        g.fillOval(r.x,r.y,(int)r.getWidth(),(int)r.getHeight());
+        g.fillOval(projectileModel.x, projectileModel.y,(int) projectileModel.getWidth(),(int) projectileModel.getHeight());
     }
 }
