@@ -1,14 +1,14 @@
 import java.awt.*;
 
 public class Ball implements Runnable {
-    Rectangle projectileModel;
-    Color c;
-    int vx = 1;
-    int vy = 1;
+    public static Rectangle projectileModel;
+    private Color c;
+    private int vx = (int) Math.pow(-1,(int)(Math.random()*2));
+    private int vy = (int) Math.pow(-1,(int)(Math.random()*2));
 
     Ball() {
-        projectileModel = new Rectangle((int)(Math.random()*900),(int)(Math.random()*900),25,25);
-        c = new Color(0xFF193C);
+        projectileModel = new Rectangle((int)(Math.random()*700),(int)(Math.random()*700),25,25);
+        c = new Color(0xFF2ACB);
     }
 
     @Override

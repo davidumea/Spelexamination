@@ -6,6 +6,8 @@ Pang pang spel
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 
@@ -16,6 +18,7 @@ public class Spel extends Canvas {
 
     private Ball ball;
     private Player player;
+    private Laser laser;
 
     public static Timer timerUp;
     public static Timer timerLeft;
@@ -30,7 +33,20 @@ public class Spel extends Canvas {
     private boolean movingLeft;
     private boolean movingRight;
 
-    public static boolean gameOver = false;
+    public static boolean shootingUp = false;
+    public static boolean shootingDown = false;
+    public boolean shootingLeft;
+    public boolean shootingRight;
+
+    public static Timer shootingTimerUp;
+    public static Timer shootingTimerDown;
+    public static Timer shootingTimerLeft;
+    public static Timer shootingTimerRight;
+
+    private static final int laserSpeed = 1;
+    private static final int timesLaserSpeed = 1;
+
+    public static boolean youLost = false;
 
     /**
      * Skapa spelyta, spelaren, bollar, kopplar tangentbordet till spelet.
@@ -48,13 +64,16 @@ public class Spel extends Canvas {
         frame.setBackground(Color.lightGray);
         ball = new Ball();
         player = new Player(ball);
+        laser = new Laser();
 
         this.addKeyListener(new KeyListener());
 
-        Thread ball = new Thread(this.ball);
-        Thread Player = new Thread(player);
-        ball.start();
+        Thread Ball = new Thread(this.ball);
+        Thread Player = new Thread(this.player);
+        Thread Laser = new Thread(this.laser);
+        Ball.start();
         Player.start();
+        Laser.start();
 
         long lastUpdate = System.nanoTime();
 
@@ -80,6 +99,7 @@ public class Spel extends Canvas {
         Graphics dbg = dbImage.getGraphics();
         ball.draw(dbg);
         player.draw(dbg);
+        laser.shoot(dbg);
         getGraphics().drawImage(dbImage,0,0,this);
     }
 
@@ -87,11 +107,19 @@ public class Spel extends Canvas {
 
         @Override
         public void keyTyped(KeyEvent e) {
+            Laser.shoot(Graphics);
+            /*shootingTimerUp = new Timer(timesLaserSpeed, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Laser.laserModelUp.y -= laserSpeed;
+                }
+            });
+            shootingTimerUp.start();*/
         }
 
         /**
          * När en knapp blir nedtryckt så skapas en timer för den riktningen (W = uppåt, A = vänster, S = neråt och D = höger),
-         * så länge knappen är nedtryckt så rör sig spelaren 3 pixlar varje femte millisekund i den riktningen.
+         * så länge knappen är nedtryckt så rör sig spelaren 1 pixlel varje millisekund i den riktningen.
          * Om 2 knappar är nedtryckta samtidigt så rör sig spelaren diagonalt.
          * @param e
          */
@@ -117,6 +145,21 @@ public class Spel extends Canvas {
                 timerRight = new Timer(timesSpeed, e1 -> player.characterModel.x += stepSpeed);
                 timerRight.start();
             }
+            /*if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                shootingDown = true;
+                shootingTimerDown = new Timer(timesLaserSpeed, new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        laser.laserModelDown.y += laserSpeed;
+                    }
+                });
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                shootingTimerDown.start();
+            }*/
         }
 
         /**
@@ -140,6 +183,9 @@ public class Spel extends Canvas {
             if (e.getKeyCode() == KeyEvent.VK_D) {
                 movingRight = false;
                 timerRight.stop();
+            }
+            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                shootingDown = false;
             }
         }
     }
