@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.security.Key;
 
 
 /**
@@ -35,18 +36,13 @@ public class Spel extends Canvas {
 
     public static boolean shootingUp = false;
     public static boolean shootingDown = false;
-    public boolean shootingLeft;
-    public boolean shootingRight;
+    public static boolean shootingLeft = false;
+    public static boolean shootingRight = false;
 
-    public static Timer shootingTimerUp;
-    public static Timer shootingTimerDown;
-    public static Timer shootingTimerLeft;
-    public static Timer shootingTimerRight;
+    public static final int laserSpeed = 3;
+    public static final int timesLaserSpeed = 1;
 
-    private static final int laserSpeed = 1;
-    private static final int timesLaserSpeed = 1;
-
-    public static boolean youLost = false;
+    public static boolean checkedShot = true;
 
     /**
      * Skapa spelyta, spelaren, bollar, kopplar tangentbordet till spelet.
@@ -99,7 +95,7 @@ public class Spel extends Canvas {
         Graphics dbg = dbImage.getGraphics();
         ball.draw(dbg);
         player.draw(dbg);
-        laser.shoot(dbg);
+        laser.draw(dbg);
         getGraphics().drawImage(dbImage,0,0,this);
     }
 
@@ -107,14 +103,6 @@ public class Spel extends Canvas {
 
         @Override
         public void keyTyped(KeyEvent e) {
-            Laser.shoot(Graphics);
-            /*shootingTimerUp = new Timer(timesLaserSpeed, new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Laser.laserModelUp.y -= laserSpeed;
-                }
-            });
-            shootingTimerUp.start();*/
         }
 
         /**
@@ -145,21 +133,35 @@ public class Spel extends Canvas {
                 timerRight = new Timer(timesSpeed, e1 -> player.characterModel.x += stepSpeed);
                 timerRight.start();
             }
-            /*if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+            if (e.getKeyCode() == KeyEvent.VK_UP && checkedShot) {
+                checkedShot = false;
+                laser.shoot("up");
+                shootingUp = true;
+                shootingLeft = false;
+                shootingDown = false;
+                shootingRight = false;
+            } else if (e.getKeyCode() == KeyEvent.VK_LEFT && checkedShot) {
+                checkedShot = false;
+                laser.shoot("left");
+                shootingLeft = true;
+                shootingUp = false;
+                shootingRight = false;
+                shootingDown = false;
+            } else if (e.getKeyCode() == KeyEvent.VK_DOWN && checkedShot) {
+                checkedShot = false;
+                laser.shoot("down");
                 shootingDown = true;
-                shootingTimerDown = new Timer(timesLaserSpeed, new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        laser.laserModelDown.y += laserSpeed;
-                    }
-                });
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-                shootingTimerDown.start();
-            }*/
+                shootingUp = false;
+                shootingRight = false;
+                shootingLeft = false;
+            } else if (e.getKeyCode() == KeyEvent.VK_RIGHT && checkedShot) {
+                checkedShot = false;
+                laser.shoot("right");
+                shootingRight = true;
+                shootingUp = false;
+                shootingDown = false;
+                shootingLeft = false;
+            }
         }
 
         /**
@@ -183,9 +185,6 @@ public class Spel extends Canvas {
             if (e.getKeyCode() == KeyEvent.VK_D) {
                 movingRight = false;
                 timerRight.stop();
-            }
-            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                shootingDown = false;
             }
         }
     }

@@ -5,8 +5,6 @@ public class Player implements Runnable {
     private Color c2;
     private Color c4;
     Ball b;
-    //public int xPos = (int) characterModel.getX();
-    //public int yPos = (int) characterModel.getY();
 
     public Player(Ball b1) {
         this.b = b1;
