@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.security.Key;
+import java.util.ArrayList;
 
 
 /**
@@ -27,7 +28,7 @@ public class Spel extends Canvas {
     public static Timer timerRight;
 
     private static final int stepSpeed = 1;
-    private static final int timesSpeed = 1;
+    private static final int timesSpeed = 2;
 
     private boolean movingUp;
     private boolean movingDown;
@@ -40,7 +41,7 @@ public class Spel extends Canvas {
     public static boolean shootingRight = false;
 
     public static final int laserSpeed = 3;
-    public static final int timesLaserSpeed = 1;
+    public static final int timesLaserSpeed = 2;
 
     public static boolean checkedShot = true;
 
@@ -59,8 +60,12 @@ public class Spel extends Canvas {
         frame.setVisible(true);
         frame.setBackground(Color.lightGray);
         ball = new Ball();
+
+//        ArrayList<Ball> balls = new ArrayList<Ball>();
+//        balls.add(new Ball());
+
         player = new Player(ball);
-        laser = new Laser();
+        laser = new Laser(ball);
 
         this.addKeyListener(new KeyListener());
 
@@ -108,7 +113,8 @@ public class Spel extends Canvas {
         /**
          * När en knapp blir nedtryckt så skapas en timer för den riktningen (W = uppåt, A = vänster, S = neråt och D = höger),
          * så länge knappen är nedtryckt så rör sig spelaren 1 pixlel varje millisekund i den riktningen.
-         * Om 2 knappar är nedtryckta samtidigt så rör sig spelaren diagonalt.
+         *
+         * Piltangenterna används för att skjuta en laser, en för varje riktning.
          * @param e
          */
         @Override

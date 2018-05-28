@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Laser implements Runnable {
@@ -14,7 +13,10 @@ public class Laser implements Runnable {
 
     private boolean visibleCheck = false;
 
-    public Laser() {
+    Ball b;
+
+    public Laser(Ball b1) {
+        this.b = b1;
         updateLocation();
         c3 = new Color(0xFF1E1E);
     }
@@ -70,8 +72,8 @@ public class Laser implements Runnable {
         }
     }
     private void collision() {
-        if ((laserModelDown.intersects(Ball.projectileModel) || laserModelUp.intersects(Ball.projectileModel)
-                || laserModelLeft.intersects(Ball.projectileModel) || laserModelRight.intersects(Ball.projectileModel))&& visibleCheck) {
+        if ((laserModelDown.intersects(b.ballModel) || laserModelUp.intersects(b.ballModel)
+                || laserModelLeft.intersects(b.ballModel) || laserModelRight.intersects(b.ballModel))&& visibleCheck) {
             visibleCheck = false;
             System.out.println("jaha");
         }

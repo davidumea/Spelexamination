@@ -27,7 +27,7 @@ public class Player implements Runnable {
     }
 
     private void collision() {
-        if (characterModel.intersects(b.projectileModel)) {
+        if (characterModel.intersects(b.ballModel)) {
             //System.exit(0);
         }
         if (characterModel.y <= 0) {
