@@ -6,15 +6,14 @@ Pang pang spel
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.security.Key;
 import java.util.ArrayList;
 
 
 /**
  * Namnge variabler / fält
+ *
+ * Använd "timesSpeed = 2" om du är på linux och "timesSpeed = 1" om du kör windows
  */
 public class Spel extends Canvas {
 
@@ -28,7 +27,7 @@ public class Spel extends Canvas {
     public static Timer timerRight;
 
     private static final int stepSpeed = 1;
-    private static final int timesSpeed = 1;
+    private static final int timesSpeed = 2;
 
     private boolean movingUp;
     private boolean movingDown;
@@ -51,7 +50,7 @@ public class Spel extends Canvas {
      * Skapa spelyta, spelaren, bollar, kopplar tangentbordet till spelet.
      * Skapar ett system som uppdaterar hela spelet 60 gånger varje sekund så att spelet blir "60 fps" (frames per second)
      */
-    private Spel(){
+    private Spel() {
         JFrame frame = new JFrame("Spel");
         int width = 700;
         int height = 700;
