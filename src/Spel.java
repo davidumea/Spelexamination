@@ -14,11 +14,11 @@ import java.util.ArrayList;
 
 
 /**
- * Namnge variabler
+ * Namnge variabler / fält
  */
 public class Spel extends Canvas {
 
-    private Ball ball;
+    private ArrayList<Ball> balls;
     private Player player;
     private Laser laser;
 
@@ -28,7 +28,7 @@ public class Spel extends Canvas {
     public static Timer timerRight;
 
     private static final int stepSpeed = 1;
-    private static final int timesSpeed = 2;
+    private static final int timesSpeed = 1;
 
     private boolean movingUp;
     private boolean movingDown;
@@ -40,10 +40,12 @@ public class Spel extends Canvas {
     public static boolean shootingLeft = false;
     public static boolean shootingRight = false;
 
-    public static final int laserSpeed = 3;
+    public static final int laserSpeed = 4;
     public static final int timesLaserSpeed = 2;
 
     public static boolean checkedShot = true;
+
+    private static final int ballDelay = 3000;
 
     /**
      * Skapa spelyta, spelaren, bollar, kopplar tangentbordet till spelet.
@@ -59,22 +61,19 @@ public class Spel extends Canvas {
         frame.pack();
         frame.setVisible(true);
         frame.setBackground(Color.lightGray);
-        ball = new Ball();
 
-//        ArrayList<Ball> balls = new ArrayList<Ball>();
-//        balls.add(new Ball());
 
-        player = new Player(ball);
-        laser = new Laser(ball);
+        balls = new ArrayList<>();
+        player = new Player(balls);
+        laser = new Laser(balls);
 
         this.addKeyListener(new KeyListener());
 
-        Thread Ball = new Thread(this.ball);
-        Thread Player = new Thread(this.player);
-        Thread Laser = new Thread(this.laser);
-        Ball.start();
-        Player.start();
-        Laser.start();
+        Thread player = new Thread(this.player);
+        Thread laser = new Thread(this.laser);
+        player.start();
+        laser.start();
+        initBalls();
 
         long lastUpdate = System.nanoTime();
 
@@ -93,15 +92,29 @@ public class Spel extends Canvas {
     }
 
     /**
-     * Ritar ut bollen och spelaren på spelytan
+     * Ritar ut bollarna och spelaren på spelytan
      */
     private void draw() {
         Image dbImage = createImage(getWidth(), getHeight());
         Graphics dbg = dbImage.getGraphics();
-        ball.draw(dbg);
+        for(Ball ballNumber : balls){
+            ballNumber.draw(dbg);
+        }
         player.draw(dbg);
         laser.draw(dbg);
         getGraphics().drawImage(dbImage,0,0,this);
+    }
+
+    /**
+     * Skapar ny boll varje tredje sekund
+     */
+    private void initBalls() {
+        new Timer(ballDelay, e -> {
+            Ball ball = new Ball(balls);
+            balls.add(ball);
+            Thread ballThread = new Thread(ball);
+            ballThread.start();
+        }).start();
     }
 
     private class KeyListener implements java.awt.event.KeyListener {
@@ -114,7 +127,8 @@ public class Spel extends Canvas {
          * När en knapp blir nedtryckt så skapas en timer för den riktningen (W = uppåt, A = vänster, S = neråt och D = höger),
          * så länge knappen är nedtryckt så rör sig spelaren 1 pixlel varje millisekund i den riktningen.
          *
-         * Piltangenterna används för att skjuta en laser, en för varje riktning.
+         * Om en av piltangenterna blir nedtryckt så sätts en String för varje riktning och booleans till true eller false beroende på vilken knapp,
+         * så att metoden shoot i klassen Laser vet vilken knapp som är nedtryckt.
          * @param e
          */
         @Override
